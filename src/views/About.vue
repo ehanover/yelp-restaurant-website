@@ -1,5 +1,7 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <div class="row justify-content-left">
+      <div class="col-6">One of one columns...</div>
+    </div>
   </div>
 </template>
