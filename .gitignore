@@ -1,5 +1,6 @@
 # exclude file with API key info
 src/credentials.js
+*.py
 
 .DS_Store
 node_modules

@@ -7,12 +7,15 @@
 
     <router-view/>
 
+    <!-- TODO add footer? -->
+
   </div>
 </template>
 
 <style>
+/* TODO change defaults */
+
 #app {
-  /* TODO change defaults */
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

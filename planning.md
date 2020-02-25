@@ -1,7 +1,8 @@
-# Requirements
+### Requirements
 1. Submit a deployed web application and include both your website URL and the supporting Github repository.
 	netlify
 	github pages
+	s3?
 2. The app must use Yelp's Fusion API
 	get api key
 3. Your app should be able to plot merchants on a map
@@ -11,6 +12,8 @@
 		https://github.com/Yelp/yelp-fusion/tree/master/fusion/node
 		https://www.yelp.com/developers/documentation/v3/business_search
 			gives long, lat
+		https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
+			official tutorial
 		fields for seaching
 			name, category, location (and radius), open now
 	displaying map
@@ -22,7 +25,7 @@
 	only works with https?
 
 
-# Extras
+### Extras
 1. Display trends and stats about popular cuisines, quality cuisines, etc.
 2. Create a chat bot
 3. Unique and interactive user interface
@@ -31,7 +34,7 @@
 5. "Give me a random recommendation"
 
 
-# Code
+### Code
 Components
 	graph
 	data getter/helper?
@@ -39,13 +42,14 @@ Views
 	home
 	about
 	map search?
-	recommendation?
+	recommendation? (can "display trends and stats about merchants")
 
 
-# TODO
+### TODO
 Change favicon
-Use bootstrap theme
+Use bootstrap theme (yelp's red color?)
 
-___
-## Other
-node ./node_modules/eslint/bin/eslint.js --fix src/views/Home.vue
+
+### Other
+eslint: ```node ./node_modules/eslint/bin/eslint.js --fix src/views/Home.vue```
+Hours: 2/22 (1), 2/23 (2), 2/24 (2)
