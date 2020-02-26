@@ -28,16 +28,13 @@
                 <input type="checkbox" id="searchOptionOpenNowId" v-model="searchOptionOpenNow">
 
                 <label class="form-range-label" for="searchOptionRadiusId">Search Radius: {{searchOptionRadius}} miles</label>
-                <input type="range" min="1" max="100" id="searchOptionRadiusId" v-model="searchOptionRadius">
+                <input type="range" min="1" max="25" id="searchOptionRadiusId" v-model="searchOptionRadius">
 
                 <label class="form-check-label" for="searchOptionSortId">Sort By: </label>
                 <div id="searchOptionSortId">
                   <select class="form-control" v-model="searchOptionSortByChoice">
                     <option v-for="(option,index) in searchOptionSortByChoices" :key="index">{{ option }}</option>
-                    <!-- <option>Best match</option>
-                    <option>Rating</option>
-                    <option>Number of reviews</option>
-                    <option>Distance</option> -->
+                    <!-- .replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) -->
                   </select>
                 </div>
 
@@ -49,8 +46,10 @@
             </div> -->
           </form>
 
-          <my-map></my-map>
+          <my-map ref="map"></my-map>
+          <button type="submit" class="btn btn-primary" v-on:click="speak()">Speak</button>
           <h5>Click on a pin on the map above to see details</h5>
+          <!-- <h4 v-if="$refs.map !== undefined">Currently selected: {{ $refs.map.selectedId }}</h4> -->
         </div>
         <div class="col-sm-2 sidenav">
           <p><a href="#">Link</a></p>
@@ -93,54 +92,66 @@ export default {
 
       position: null,
       searchOptionTerm: '',
-      searchOptionRadius: 50,
+      searchOptionRadius: 10,
       searchOptionOpenNow: false,
       searchOptionSortByChoices: ['best_match', 'rating', 'review_count', 'distance'],
-      searchOptionSortByChoice: 'best_match',
-
-      merchants: [
-        {
-          name: 'Sentiment',
-          id: 'abc',
-          long: 2,
-          lat: 3
-        }
-      ]
-
+      searchOptionSortByChoice: 'best_match'
     }
   },
 
   mounted () {
-    /*
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (pos) {
-        console.log('Got location!')
-        // this.position = pos
-      })
+      navigator.geolocation.getCurrentPosition(this.setLocation)
+      // function (pos) {
+      // console.log('Got location!')
+      // this.position = pos
+      // this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
+      // })
     } else {
       console.error('Error retrieving geolocation')
     }
-    */
 
     axios.defaults.headers.common.Authorization = 'Bearer ' + YelpApiKey
     // axios.defaults.headers.common['x-requested-with'] = 'XMLHttpRequest'
-    // this.getCloseMerchants()
   },
   methods: {
+    speak: function () {
+      console.log('selected: ' + this.$refs.map.selectedId)
+    },
+    setLocation: function (pos) {
+      this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
+    },
+    addMarkersFromData: function (apiData) {
+      var businesses = apiData.data.businesses
+      for (var i = 0; i < 20; i++) {
+        var b = businesses[i]
+        var data = {
+          location: { lat: b.coordinates.latitude, lng: b.coordinates.longitude },
+          name: b.name,
+          id: b.id
+        }
+        this.$refs.map.addMarker(data)
+      }
+    },
     getCloseMerchants: function () {
       var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search' +
-        '?term=' + this.searchOptionTerm +
-        '&location=paris'
+        '?term=coffee' + // this.searchOptionTerm +
+        '&location=charlottesville'
       // '&radius=' + this.searchOptionRadius +
       // '&open_now=' + this.searchOptionOpenNow +
       // '&sort_by=' + this.searchOptionSortByChoice // this.searchOptionSortByChoices.indexOf(this.searchOptionSortByChoice)
       // '{0}&latitiude={1}&longitude={2}&radius={3}&open_now={4}&sort_by={5}
       // .format(this.searchOptionTerm, 1, 1, this.searchOptionRadius, this.searchOptionOpenNow, this.searchOptionSortByChoices.indexOf(this.searchOptionSortByChoice))
-      console.log('requesting with url: ' + req)
+      // console.log('requesting with url: ' + req)
 
       axios
         .get(req)
-        .then(response => (console.log(response)))
+        .then(response => {
+          // console.log(response)
+          this.$refs.map.clearAllMarkers()
+          this.addMarkersFromData(response)
+          this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13)
+        })
         .catch(error => {
           console.error(error)
         })
@@ -152,3 +163,38 @@ export default {
 }
 
 </script>
+
+<!--
+
+{data: {…}, status: 200, statusText: "OK", headers: {…}, config: {…}, …}
+data: {businesses: Array(20), total: 164, region: {…}}
+status: 200
+statusText: "OK"
+headers:
+accept-ranges: "bytes"
+access-control-allow-origin: "*"
+connection: "keep-alive"
+content-encoding: "gzip"
+content-type: "application/json"
+date: "Wed, 26 Feb 2020 00:42:31 GMT"
+ratelimit-dailylimit: "5000"
+ratelimit-remaining: "4997"
+ratelimit-resettime: "2020-02-27T00:00:00+00:00"
+server: "nginx"
+transfer-encoding: "chunked"
+vary: "Accept-Encoding"
+via: "1.1 varnish, 1.1 vegur"
+x-b3-sampled: "0"
+x-cache: "MISS"
+x-cache-hits: "0"
+x-final-url: "https://api.yelp.com/v3/businesses/search?term=coffee&location=charlottesville"
+x-proxied: "10-65-163-96-useast1bprod"
+x-routing-service: "10-65-226-173-useast1cprod; site=public_api_v3"
+x-served-by: "cache-dca17765-DCA"
+x-zipkin-id: "7b4d9267bd84ff21"
+__proto__: Object
+config: {url: "https://cors-anywhere.herokuapp.com/https://api.ye…esses/search?term=coffee&location=charlottesville", method: "get", headers: {…}, transformRequest: Array(1), transformResponse: Array(1), …}
+request: XMLHttpRequest {readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, onreadystatechange: ƒ, …}
+__proto__: Object
+
+-->
