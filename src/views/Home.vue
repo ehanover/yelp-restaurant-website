@@ -3,7 +3,7 @@
     <h1>Yelp Merchant Search</h1>
 
     <div class="container-fluid text-center">
-      <div class="row content"> <!-- TODO needed? -->
+      <div class="row content"> <!-- TODO is this needed? -->
         <div class="col-sm-2 sidenav">
           <p><a href="#">Link</a></p>
           <p><a href="#">Link</a></p>
@@ -47,8 +47,9 @@
           </form>
 
           <my-map ref="map"></my-map>
-          <button type="submit" class="btn btn-primary" v-on:click="speak()">Speak</button>
-          <h5>Click on a pin on the map above to see details</h5>
+          <h5><i>Click a pin on the map above to see more details</i></h5>
+          <br>
+          <merchant-info ref="info"></merchant-info>
           <!-- <h4 v-if="$refs.map !== undefined">Currently selected: {{ $refs.map.selectedId }}</h4> -->
         </div>
         <div class="col-sm-2 sidenav">
@@ -65,7 +66,8 @@
       </div>
     </div>
 
-    <h4>Bottom Text</h4>
+    <!-- centered -->
+    <!-- <h4>Bottom Text</h4> -->
 
   </div>
 </template>
@@ -78,17 +80,23 @@
 
 <script>
 
-import { YelpApiKey } from '../credentials'
 import MyMap from '../components/MyMap.vue'
+import MerchantInfo from '../components/MerchantInfo.vue'
+import { YelpApiKey, MapsApiKey } from '../credentials'
+import { Loader } from 'google-maps'
 import axios from 'axios'
 
 export default {
   components: {
-    'my-map': MyMap
+    'my-map': MyMap,
+    'merchant-info': MerchantInfo
   },
   data () {
     return {
       corsAnywherePrefix: 'https://cors-anywhere.herokuapp.com/',
+      // loader: null,
+      google: null,
+      labelToId: {},
 
       position: null,
       searchOptionTerm: '',
@@ -99,38 +107,42 @@ export default {
     }
   },
 
-  mounted () {
+  async mounted () {
+    const loader = new Loader(MapsApiKey)
+    this.google = await loader.load() // this could use "then" instead of "await" if needed
+    this.$refs.map.init(this.google)
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.setLocation)
-      // function (pos) {
-      // console.log('Got location!')
-      // this.position = pos
-      // this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
-      // })
+      navigator.geolocation.getCurrentPosition(this.mapRefocus)
     } else {
       console.error('Error retrieving geolocation')
     }
 
     axios.defaults.headers.common.Authorization = 'Bearer ' + YelpApiKey
-    // axios.defaults.headers.common['x-requested-with'] = 'XMLHttpRequest'
   },
   methods: {
-    speak: function () {
-      console.log('selected: ' + this.$refs.map.selectedId)
-    },
-    setLocation: function (pos) {
+    mapRefocus: function (pos) {
       this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
     },
-    addMarkersFromData: function (apiData) {
+    mapMarkerClicked: function (marker) {
+      var clickedId = this.labelToId[marker.label]
+      console.log('marker clicked, id=' + clickedId)
+    },
+    addMarkersFromData: function (apiData) { // TODO move to map component?
       var businesses = apiData.data.businesses
-      for (var i = 0; i < 20; i++) {
+      for (var i = 0; i < businesses.length; i++) {
         var b = businesses[i]
         var data = {
           location: { lat: b.coordinates.latitude, lng: b.coordinates.longitude },
           name: b.name,
           id: b.id
         }
-        this.$refs.map.addMarker(data)
+        var m = this.$refs.map.addMarker(data)
+        var v = this // stores reference to vue variables and functions
+        this.google.maps.event.addListener(m, 'click', function () {
+          v.mapMarkerClicked(this) // "this" is the marker that was clicked
+        })
+        this.labelToId[m.label] = b.id
       }
     },
     getCloseMerchants: function () {
@@ -147,7 +159,7 @@ export default {
       axios
         .get(req)
         .then(response => {
-          // console.log(response)
+          console.log(response)
           this.$refs.map.clearAllMarkers()
           this.addMarkersFromData(response)
           this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13)
@@ -163,38 +175,3 @@ export default {
 }
 
 </script>
-
-<!--
-
-{data: {…}, status: 200, statusText: "OK", headers: {…}, config: {…}, …}
-data: {businesses: Array(20), total: 164, region: {…}}
-status: 200
-statusText: "OK"
-headers:
-accept-ranges: "bytes"
-access-control-allow-origin: "*"
-connection: "keep-alive"
-content-encoding: "gzip"
-content-type: "application/json"
-date: "Wed, 26 Feb 2020 00:42:31 GMT"
-ratelimit-dailylimit: "5000"
-ratelimit-remaining: "4997"
-ratelimit-resettime: "2020-02-27T00:00:00+00:00"
-server: "nginx"
-transfer-encoding: "chunked"
-vary: "Accept-Encoding"
-via: "1.1 varnish, 1.1 vegur"
-x-b3-sampled: "0"
-x-cache: "MISS"
-x-cache-hits: "0"
-x-final-url: "https://api.yelp.com/v3/businesses/search?term=coffee&location=charlottesville"
-x-proxied: "10-65-163-96-useast1bprod"
-x-routing-service: "10-65-226-173-useast1cprod; site=public_api_v3"
-x-served-by: "cache-dca17765-DCA"
-x-zipkin-id: "7b4d9267bd84ff21"
-__proto__: Object
-config: {url: "https://cors-anywhere.herokuapp.com/https://api.ye…esses/search?term=coffee&location=charlottesville", method: "get", headers: {…}, transformRequest: Array(1), transformResponse: Array(1), …}
-request: XMLHttpRequest {readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, onreadystatechange: ƒ, …}
-__proto__: Object
-
--->

@@ -7,7 +7,10 @@
 
     <router-view/>
 
-    <!-- TODO add footer? -->
+    <br>
+    <div class="footer navbar-fixed-bottom">
+      <p>By Ethan Hanover | <a href="https://github.com/ehanover">github.com/ehanover</a></p>
+    </div>
 
   </div>
 </template>

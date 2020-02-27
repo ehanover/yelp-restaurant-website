@@ -7,9 +7,9 @@
 
 <script>
 
-import { MapsApiKey } from '../credentials'
+// import { MapsApiKey } from '../credentials'
 // import GoogleMapsLoader from 'google-maps'
-import { Loader } from 'google-maps' // , LoaderOptions
+// import { Loader } from 'google-maps' // , LoaderOptions
 
 export default {
   name: 'MyMap',
@@ -23,23 +23,13 @@ export default {
     }
   },
   async mounted () { // TODO the map gets loaded every time the page changes
-    /*
-    var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' // eslint-disable-line no-unused-vars
-    var markers = this.locations.map(function (location, i) { // eslint-disable-line no-unused-vars
-      return new google.maps.Marker({
-        position: location,
-        label: labels[i % labels.length]
-      })
-    })
-    */
-
     // https://www.npmjs.com/package/google-maps
-    const loader = new Loader(MapsApiKey)
-    this.google = await loader.load() // TODO I could move the google object to the parent class. That would allow proper click handle and maybe smarter loading?
-    this.map = new this.google.maps.Map(document.getElementById('map-area'), { // eslint-disable-line no-unused-vars
-      center: { lat: 38.035, lng: -78.503 },
-      zoom: 12
-    })
+    // const loader = new Loader(MapsApiKey)
+    // this.google = await loader.load() // TODO I could move the google object to the parent class. That would allow proper click handle and maybe smarter loading?
+    // this.map = new this.google.maps.Map(document.getElementById('map-area'), { // eslint-disable-line no-unused-vars
+    //   center: { lat: 38.035, lng: -78.503 },
+    //   zoom: 12
+    // })
     // loader.load().then(function (google) {
     //   const map = new google.maps.Map(document.getElementById('map-area'), { // eslint-disable-line no-unused-vars
     //     center: { lat: -34.397, lng: 150.644 },
@@ -48,10 +38,18 @@ export default {
     // })
   },
   methods: {
-    setClicked: function (id) { // problem
-      this.selectedId = id
-      console.log('selected the marker for ' + this.selectedId)
+    init: function (g) {
+      this.google = g
+
+      this.map = new this.google.maps.Map(document.getElementById('map-area'), {
+        center: { lat: 38.035, lng: -78.503 },
+        zoom: 12
+      })
     },
+    // setClicked: function (id) { // problem
+    //   this.selectedId = id
+    //   console.log('selected the marker for ' + this.selectedId)
+    // },
     addMarker: function (markerData) {
       var m = new this.google.maps.Marker({
         position: markerData.location,
@@ -59,12 +57,9 @@ export default {
         // title: markerData.name,
         label: markerData.name
       })
-      this.google.maps.event.addListener(m, 'click', function () {
-        // this.selectedId = markerData.id
-        // setClicked(markerData.id)
-      })
       this.markers.push(m)
-      // return m // return marker to parent class to allow onclick binding (this won't work)
+      // console.log('returning m, l=' + m.label)
+      return m // return marker to parent class to allow onclick binding
     },
     refocus: function (x, y, zoom) {
       // this.map.setCenter(this.markers[0].location)

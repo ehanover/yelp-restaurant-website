@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import HelloWorld from '../views/HelloWorld.vue'
+
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 
@@ -9,19 +9,26 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    // name: 'HelloWorld', TODO
-    component: Home
+    component: Home,
+    name: 'Home'
   },
   {
     path: '/about',
-    // name: 'About',
-    // component: () => import('../views/About.vue') // TODO which import style is better?
-    component: About
+    component: About,
+    name: 'About'
   }
 ]
 
 const router = new VueRouter({
   routes
+})
+
+const PAGE_TITLE = {
+  Home: 'Yelp Restaurant Search',
+  About: 'About'
+}
+router.afterEach((toRoute, fromRoute) => {
+  window.document.title = PAGE_TITLE[toRoute.name]
 })
 
 export default router

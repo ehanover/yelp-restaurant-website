@@ -37,6 +37,8 @@
 4. "Similar places to ___"
 5. "Give me a random recommendation" (I'm feeling lucky)
 6. Find places that are "hot_and_new" or or have "deals"/"cashback" (on business search api page)
+7. Use other APIs
+	- Twitter!
 
 
 #### Code
