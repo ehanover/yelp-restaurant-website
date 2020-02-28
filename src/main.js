@@ -5,7 +5,8 @@ import router from './router'
 Vue.config.productionTip = false
 
 Vue.component('my-map', require('./components/MyMap'))
-Vue.component('merch-info', require('./components/MerchantInfo'))
+// Vue.component('merch-info', require('./components/MerchantInfo'))
+Vue.component('merch-list', require('./components/MerchantList'))
 
 new Vue({
   router,

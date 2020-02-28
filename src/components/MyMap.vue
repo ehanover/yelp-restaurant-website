@@ -84,7 +84,7 @@ export default {
   background-color: pink;
 } */
 #map-area {
-  height: 600px;
+  height: 700px;
   /* background-color: purple; */
 }
 

@@ -9,7 +9,7 @@
 
     <br>
     <div class="footer navbar-fixed-bottom">
-      <p>By Ethan Hanover | <a href="https://github.com/ehanover">github.com/ehanover</a></p>
+      <p><a href="https://github.com/ehanover">By Ethan Hanover</a> | Powered by <a href="https://www.yelp.com/fusion">Yelp Fusion</a></p>
     </div>
 
   </div>

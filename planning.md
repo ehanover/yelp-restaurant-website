@@ -50,6 +50,7 @@
 	- about
 	- map search?
 	- recommendation? (can "display trends and stats about merchants")
+	- chartjs
 
 
 #### TODO

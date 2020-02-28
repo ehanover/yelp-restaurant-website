@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
+import MerchantInfo from '../views/MerchantInfo.vue'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,12 @@ const routes = [
     path: '/about',
     component: About,
     name: 'About'
+  },
+  {
+    path: '/merchant',
+    component: MerchantInfo,
+    name: 'MerchantInfo',
+    props: true
   }
 ]
 
@@ -25,7 +32,8 @@ const router = new VueRouter({
 
 const PAGE_TITLE = {
   Home: 'Yelp Restaurant Search',
-  About: 'About'
+  About: 'About',
+  MerchantInfo: 'Merchant Info'
 }
 router.afterEach((toRoute, fromRoute) => {
   window.document.title = PAGE_TITLE[toRoute.name]

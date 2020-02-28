@@ -23,15 +23,16 @@
                 </div>
                 <button type="submit" class="btn btn-primary col-sm-1" v-on:click="getCloseMerchants()">Search</button>
               </div>
+              <br>
               <div class="row">
                 <label class="form-check-label" for="searchOptionOpenNowId">Only Open Now: </label>
-                <input type="checkbox" id="searchOptionOpenNowId" v-model="searchOptionOpenNow">
+                <input class="col-sm-1" type="checkbox" id="searchOptionOpenNowId" v-model="searchOptionOpenNow">
 
                 <label class="form-range-label" for="searchOptionRadiusId">Search Radius: {{searchOptionRadius}} miles</label>
-                <input type="range" min="1" max="25" id="searchOptionRadiusId" v-model="searchOptionRadius">
+                <input class="col-sm-3" type="range" min="1" max="25" id="searchOptionRadiusId" v-model="searchOptionRadius">
 
                 <label class="form-check-label" for="searchOptionSortId">Sort By: </label>
-                <div id="searchOptionSortId">
+                <div class="col-sm-2" id="searchOptionSortId">
                   <select class="form-control" v-model="searchOptionSortByChoice">
                     <option v-for="(option,index) in searchOptionSortByChoices" :key="index">{{ option }}</option>
                     <!-- .replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) -->
@@ -49,7 +50,8 @@
           <my-map ref="map"></my-map>
           <h5><i>Click a pin on the map above to see more details</i></h5>
           <br>
-          <merchant-info ref="info"></merchant-info>
+          <!-- <merchant-info ref="info"></merchant-info> -->
+          <merchant-list ref="list"></merchant-list>
           <!-- <h4 v-if="$refs.map !== undefined">Currently selected: {{ $refs.map.selectedId }}</h4> -->
         </div>
         <div class="col-sm-2 sidenav">
@@ -81,7 +83,8 @@
 <script>
 
 import MyMap from '../components/MyMap.vue'
-import MerchantInfo from '../components/MerchantInfo.vue'
+// import MerchantInfo from '../components/MerchantInfo.vue'
+import MerchantList from '../components/MerchantList.vue'
 import { YelpApiKey, MapsApiKey } from '../credentials'
 import { Loader } from 'google-maps'
 import axios from 'axios'
@@ -89,7 +92,8 @@ import axios from 'axios'
 export default {
   components: {
     'my-map': MyMap,
-    'merchant-info': MerchantInfo
+    // 'merchant-info': MerchantInfo
+    'merchant-list': MerchantList
   },
   data () {
     return {
@@ -143,10 +147,15 @@ export default {
           v.mapMarkerClicked(this) // "this" is the marker that was clicked
         })
         this.labelToId[m.label] = b.id
+
+        // update merchant list
+        // this.businesses = businesses
       }
+      console.log('about to init: ' + businesses)
+      this.$refs.list.init(businesses)
     },
     getCloseMerchants: function () {
-      var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search' +
+      var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search' + // TODO make this params{}?
         '?term=coffee' + // this.searchOptionTerm +
         '&location=charlottesville'
       // '&radius=' + this.searchOptionRadius +
@@ -162,15 +171,13 @@ export default {
           console.log(response)
           this.$refs.map.clearAllMarkers()
           this.addMarkersFromData(response)
-          this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13)
+          this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13) // TODO make this depend on search radius?
         })
         .catch(error => {
           console.error(error)
         })
-    },
-    getMerchantInfo: function (merchantID) {
-
     }
+
   }
 }
 
