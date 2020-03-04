@@ -75,7 +75,7 @@
 <script>
 
 import axios from 'axios'
-import { ZomatoUserKey } from '../credentials'
+import { getZomatoUserKey } from '../credentials'
 
 export default {
   props: ['id'],
@@ -111,7 +111,7 @@ export default {
       axios
         .get(req, {
           headers: {
-            'user-key': ZomatoUserKey
+            'user-key': getZomatoUserKey()
           },
           params: {
             q: this.merchant.name,
@@ -145,7 +145,7 @@ export default {
       axios
         .get(req2, {
           headers: {
-            'user-key': ZomatoUserKey
+            'user-key': getZomatoUserKey()
           },
           params: {
             res_id: this.merchantZomato.id

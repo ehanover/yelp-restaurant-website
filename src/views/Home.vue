@@ -110,7 +110,7 @@
 
 import MyMap from '../components/MyMap.vue'
 import MerchantList from '../components/MerchantList.vue'
-import { YelpApiKey, MapsApiKey } from '../credentials'
+import { getYelpApiKey, getMapsApiKey } from '../credentials'
 import { Loader } from 'google-maps'
 import axios from 'axios'
 
@@ -139,7 +139,9 @@ export default {
   },
 
   async mounted () {
-    const loader = new Loader(MapsApiKey)
+    console.log('maps key: ' + getMapsApiKey())
+
+    const loader = new Loader(getMapsApiKey())
     this.google = await loader.load()
     this.$refs.map.init(this.google)
 
@@ -156,7 +158,7 @@ export default {
       console.error('Error retrieving geolocation')
     }
 
-    axios.defaults.headers.common.Authorization = 'Bearer ' + YelpApiKey
+    axios.defaults.headers.common.Authorization = 'Bearer ' + getYelpApiKey()
   },
   methods: {
     mapRefocus: function (pos) {
