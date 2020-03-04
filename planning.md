@@ -7,6 +7,7 @@
 	- netlify
 	- github pages
 	- s3?
+	- heroku
 2. The app must use Yelp's Fusion API
 	- get api key
 3. Your app should be able to plot merchants on a map
@@ -26,7 +27,7 @@
 		- needs api key
 4. Your app should be able to obtain user location via HTML5 Geolocation
 	- https://www.w3schools.com/html/html5_geolocation.asp
-	- only works with https? (might be a problem with hosting)
+	- only works with https?
 
 
 #### Extras
@@ -35,10 +36,11 @@
 3. Unique and interactive user interface
 
 4. "Similar places to ___"
-5. "Give me a random recommendation" (I'm feeling lucky)
+5. "Give me a random recommendation"
 6. Find places that are "hot_and_new" or or have "deals"/"cashback" (on business search api page)
 7. Use other APIs
-	- Twitter?
+	- ~~Twitter?~~ requires server communication
+	- Weather?
 
 
 #### Code
@@ -54,8 +56,8 @@
 
 
 #### TODO
-- Change favicon
-- Use bootstrap theme (yelp's red color?)
+- ~~Change favicon~~
+- ~~Use bootstrap theme (yelp's red color?)~~
 
 
 #### Other

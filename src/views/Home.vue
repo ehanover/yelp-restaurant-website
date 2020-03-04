@@ -5,11 +5,11 @@
       <router-link to="/about">About</router-link>
     </div>
 
-    <h1>Yelp Merchant Search</h1>
-    <p>To get started, search for merchants below.</p>
+    <h1>Yelp Restaurant Search</h1>
+    <p>To get started, search for restaurants below.</p>
 
     <div class="container-fluid text-center">
-      <div class="row content"> <!-- TODO is this needed? -->
+      <div class="row content">
         <div class="col-sm-2 sidenav">
           <!-- <p><a href="#">Link</a></p>
           <p><a href="#">Link</a></p>
@@ -20,20 +20,23 @@
 
           <form>
             <div class="container-fluid form-group">
+
               <div class="row">
                 <a class="col-sm-2">Search term: </a>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" id="inputSearch" v-model="searchOptionTerm" placeholder='"Starbucks" or "barbeque"'>
                 </div>
               </div>
+
               <br>
               <div class="row">
                 <a class="col-sm-2">Location: </a>
                 <!-- TODO implement -->
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" id="inputLocation" placeholder='"Charlottesville" or blank for current location'>
+                  <input type="text" class="form-control" id="inputLocation" v-model="searchOptionLocation" placeholder='"Charlottesville" or blank for current location'>
                 </div>
               </div>
+
               <br>
               <div class="row">
                 <div class="col-sm-3">
@@ -62,6 +65,7 @@
                 <button type="submit" class="btn btn-primary col-sm-1" v-on:click="getCloseMerchants()">Search</button>
 
               </div>
+
             </div>
           </form>
 
@@ -124,10 +128,13 @@ export default {
 
       position: null,
       searchOptionTerm: '',
+      searchOptionLocation: '',
       searchOptionRadius: 10,
       searchOptionOpenNow: false,
-      searchOptionSortByChoices: ['best_match', 'rating', 'review_count', 'distance'],
-      searchOptionSortByChoice: 'best_match'
+      // searchOptionSortByChoices: ['best_match', 'rating', 'review_count', 'distance'],
+      searchOptionSortByActual: ['rating', 'best_match', 'review_count', 'distance'], // terms that are used in the API call
+      searchOptionSortByChoices: ['Rating', 'Best Match', 'Review Count', 'Distance'], // terms that are displayed to the user
+      searchOptionSortByChoice: 'Rating'
     }
   },
 
@@ -181,22 +188,28 @@ export default {
         this.labelToId[m.label] = b.id
       }
 
-      this.$refs.list.init(businesses, this.searchOptionSortByChoice)
+      this.$refs.list.init(businesses, this.convertSearchTerm(this.searchOptionSortByChoice))
     },
     getCloseMerchants: function () {
       // console.log('requesting with pos rad=' + this.searchOptionRadius)
       var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search'
 
+      var params = {
+        term: this.searchOptionTerm,
+        radius: this.searchOptionRadius * 1609, // convert miles to meters
+        open_now: this.searchOptionOpenNow,
+        sort_by: this.convertSearchTerm(this.searchOptionSortByChoice)
+      }
+      if (this.searchOptionLocation === '') {
+        params.latitude = this.position.latitude
+        params.longitude = this.position.longitude
+      } else {
+        params.location = this.searchOptionLocation
+      }
+
       axios
         .get(req, {
-          params: {
-            term: this.searchOptionTerm,
-            radius: this.searchOptionRadius * 1609, // convert miles to meters
-            open_now: this.searchOptionOpenNow,
-            sort_by: this.searchOptionSortByChoice,
-            latitude: this.position.latitude,
-            longitude: this.position.longitude
-          }
+          params: params
         })
         .then(response => {
           console.log('Got response from business search')
@@ -207,6 +220,9 @@ export default {
         .catch(error => {
           console.error(error)
         })
+    },
+    convertSearchTerm: function (displayTerm) {
+      return this.searchOptionSortByActual[this.searchOptionSortByChoices.indexOf(displayTerm)]
     }
 
   }

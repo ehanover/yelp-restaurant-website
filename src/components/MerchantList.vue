@@ -8,19 +8,17 @@
         <thead>
           <tr>
             <th>Merchant Name</th>
-            <th>{{ sortParam }}</th>
+            <th>{{ prettyHeader(sortParam) }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(m,index) in merchants" :key="index" :id="'row ' + m.id">
             <td> <a v-bind:style="getRowStyle(m)">{{ index+1 }}. <router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></a> </td>
-            <!-- <td> <a style="font-weight: bold;">{{ index+1 }}. <router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></a> </td> -->
             <td>{{ getTableProperty(m, sortParam) }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <!-- TODO add the if/else null section -->
 
   </div>
 </template>
@@ -42,10 +40,8 @@ export default {
     init: function (merchants, sortParam) {
       this.merchants = merchants
       this.sortParam = sortParam
-      // this.$forceUpdate()
     },
     getTableProperty: function (m, param) {
-      // ['best_match', 'rating', 'review_count', 'distance']
       if (param === 'best_match') {
         return m.price // this isn't an obvious display choice
       } else if (param === 'rating') {
@@ -60,27 +56,17 @@ export default {
     },
     highlightRow: function (mid) {
       this.selectedId = mid
-      // console.log('highlight set, id=' + this.selectedId)
-      // this.$forceUpdate()
     },
     getRowStyle: function (m) {
       return ((m.id === this.selectedId) ? 'font-weight: bold; text-decoration: underline;' : 'font-weight: normal;')
+    },
+    prettyHeader: function (oldHeader) {
+      return oldHeader
+      // var s = oldHeader.replace('best_match', 'Price').replace('_', ' ') // replaces underscores with spaces
+      // return s.replace(/\b\w/g, function (l) { return l.toUpperCase() }) // capitalizes first letter of words
     }
-    // redirectToInfo: function (merchant) {
-    //   console.log('redirecting to id=' + merchant.id)
-    //   this.$router.push({ name: 'MerchantInfo', params: { id: merchant.id } })
-    // }
+
   }
 }
 
-/*
-<div v-for="(m,index) in merchants" :key="index">
-        <!-- <button v-on:click="redirectToInfo(m)">{{ m.name }}</button> -->
-        <!-- <a v-on:click="redirectToInfo(m)" class="link">{{ m.name }}</a> -->
-        <router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">
-          {{ m.name }}
-        </router-link>
-        <!--  target="_blank" -->
-      </div>
-*/
 </script>
