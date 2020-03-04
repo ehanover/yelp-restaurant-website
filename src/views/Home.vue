@@ -1,50 +1,68 @@
 <template>
   <div class="home">
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+
     <h1>Yelp Merchant Search</h1>
+    <p>To get started, search for merchants below.</p>
 
     <div class="container-fluid text-center">
       <div class="row content"> <!-- TODO is this needed? -->
         <div class="col-sm-2 sidenav">
+          <!-- <p><a href="#">Link</a></p>
           <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p>
+          <p><a href="#">Link</a></p> -->
         </div>
         <div class="col-sm-8 text-left">
-          <!-- <h1>Welcome</h1> -->
-          <p>To get started, search for merchants below.</p>
           <hr>
 
           <form>
-            <div class="form-group">
+            <div class="container-fluid form-group">
               <div class="row">
-                <label for="inputSub" class="col-sm-2 col-form-label">Search term: </label>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control" id="inputSearch" v-model="searchOptionTerm" placeholder='"Starbucks" or "mexican food"'>
+                <a class="col-sm-2">Search term: </a>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputSearch" v-model="searchOptionTerm" placeholder='"Starbucks" or "barbeque"'>
                 </div>
-                <button type="submit" class="btn btn-primary col-sm-1" v-on:click="getCloseMerchants()">Search</button>
               </div>
               <br>
               <div class="row">
-                <label class="form-check-label" for="searchOptionOpenNowId">Only Open Now: </label>
-                <input class="col-sm-1" type="checkbox" id="searchOptionOpenNowId" v-model="searchOptionOpenNow">
-
-                <label class="form-range-label" for="searchOptionRadiusId">Search Radius: {{searchOptionRadius}} miles</label>
-                <input class="col-sm-3" type="range" min="1" max="25" id="searchOptionRadiusId" v-model="searchOptionRadius">
-
-                <label class="form-check-label" for="searchOptionSortId">Sort By: </label>
-                <div class="col-sm-2" id="searchOptionSortId">
-                  <select class="form-control" v-model="searchOptionSortByChoice">
-                    <option v-for="(option,index) in searchOptionSortByChoices" :key="index">{{ option }}</option>
-                    <!-- .replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) -->
-                  </select>
+                <a class="col-sm-2">Location: </a>
+                <!-- TODO implement -->
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputLocation" placeholder='"Charlottesville" or blank for current location'>
                 </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-sm-3">
+                  <label class="form-check-label" for="searchOptionOpenNowId">Only Open Now: </label>
+                  <span style="display:inline-block; width: 10px;"></span>
+                  <input type="checkbox" id="searchOptionOpenNowId" v-model="searchOptionOpenNow">
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="form-range-label" for="searchOptionRadiusId">Search Radius: {{searchOptionRadius}} miles</label>
+                  <br>
+                  <input type="range" min="1" max="24" id="searchOptionRadiusId" v-model="searchOptionRadius">
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="form-check-label" for="searchOptionSortId">Sort By: </label>
+                  <br>
+                  <div id="searchOptionSortId">
+                    <select class="form-control" v-model="searchOptionSortByChoice">
+                      <option v-for="(option,index) in searchOptionSortByChoices" :key="index">{{ option }}</option>
+                      <!-- .replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) -->
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary col-sm-1" v-on:click="getCloseMerchants()">Search</button>
 
               </div>
             </div>
-            <!-- <div class="form-group row">
-              <label><input type="checkbox" :value="searchOptionOpenNow">Only Open Now</label>
-              <label><input type="range" :value="searchOptionRadius">Search Radius</label>
-            </div> -->
           </form>
 
           <my-map ref="map"></my-map>
@@ -52,10 +70,11 @@
           <br>
           <!-- <merchant-info ref="info"></merchant-info> -->
           <merchant-list ref="list"></merchant-list>
+          <br>
           <!-- <h4 v-if="$refs.map !== undefined">Currently selected: {{ $refs.map.selectedId }}</h4> -->
         </div>
         <div class="col-sm-2 sidenav">
-          <p><a href="#">Link</a></p>
+          <!-- <p><a href="#">Link</a></p>
           <p><a href="#">Link</a></p>
           <p><a href="#">Link</a></p>
           <div class="well">
@@ -63,7 +82,7 @@
           </div>
           <div class="well">
             <p>ADS</p>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -76,14 +95,16 @@
 
 <style scoped>
 #searchOptionRadiusId {
-  width: 400px;
+  width: 50%;
+}
+#searchOptionSortId {
+  width: 60%;
 }
 </style>
 
 <script>
 
 import MyMap from '../components/MyMap.vue'
-// import MerchantInfo from '../components/MerchantInfo.vue'
 import MerchantList from '../components/MerchantList.vue'
 import { YelpApiKey, MapsApiKey } from '../credentials'
 import { Loader } from 'google-maps'
@@ -92,7 +113,6 @@ import axios from 'axios'
 export default {
   components: {
     'my-map': MyMap,
-    // 'merchant-info': MerchantInfo
     'merchant-list': MerchantList
   },
   data () {
@@ -113,11 +133,18 @@ export default {
 
   async mounted () {
     const loader = new Loader(MapsApiKey)
-    this.google = await loader.load() // this could use "then" instead of "await" if needed
+    this.google = await loader.load()
     this.$refs.map.init(this.google)
 
+    var v = this
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.mapRefocus)
+      // navigator.geolocation.getCurrentPosition(this.mapRefocus)
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        console.log('updated position')
+        // console.log('updated position, lat=' + v.position.latitude)
+        v.position = pos.coords
+        v.mapRefocus(pos)
+      })
     } else {
       console.error('Error retrieving geolocation')
     }
@@ -131,8 +158,13 @@ export default {
     mapMarkerClicked: function (marker) {
       var clickedId = this.labelToId[marker.label]
       console.log('marker clicked, id=' + clickedId)
+
+      this.$refs.list.highlightRow(clickedId)
+
+      var element = document.getElementById('row ' + clickedId)
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     },
-    addMarkersFromData: function (apiData) { // TODO move to map component?
+    addMarkersFromData: function (apiData) {
       var businesses = apiData.data.businesses
       for (var i = 0; i < businesses.length; i++) {
         var b = businesses[i]
@@ -147,28 +179,27 @@ export default {
           v.mapMarkerClicked(this) // "this" is the marker that was clicked
         })
         this.labelToId[m.label] = b.id
-
-        // update merchant list
-        // this.businesses = businesses
       }
-      console.log('about to init: ' + businesses)
-      this.$refs.list.init(businesses)
+
+      this.$refs.list.init(businesses, this.searchOptionSortByChoice)
     },
     getCloseMerchants: function () {
-      var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search' + // TODO make this params{}?
-        '?term=coffee' + // this.searchOptionTerm +
-        '&location=charlottesville'
-      // '&radius=' + this.searchOptionRadius +
-      // '&open_now=' + this.searchOptionOpenNow +
-      // '&sort_by=' + this.searchOptionSortByChoice // this.searchOptionSortByChoices.indexOf(this.searchOptionSortByChoice)
-      // '{0}&latitiude={1}&longitude={2}&radius={3}&open_now={4}&sort_by={5}
-      // .format(this.searchOptionTerm, 1, 1, this.searchOptionRadius, this.searchOptionOpenNow, this.searchOptionSortByChoices.indexOf(this.searchOptionSortByChoice))
-      // console.log('requesting with url: ' + req)
+      // console.log('requesting with pos rad=' + this.searchOptionRadius)
+      var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search'
 
       axios
-        .get(req)
+        .get(req, {
+          params: {
+            term: this.searchOptionTerm,
+            radius: this.searchOptionRadius * 1609, // convert miles to meters
+            open_now: this.searchOptionOpenNow,
+            sort_by: this.searchOptionSortByChoice,
+            latitude: this.position.latitude,
+            longitude: this.position.longitude
+          }
+        })
         .then(response => {
-          console.log(response)
+          console.log('Got response from business search')
           this.$refs.map.clearAllMarkers()
           this.addMarkersFromData(response)
           this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13) // TODO make this depend on search radius?

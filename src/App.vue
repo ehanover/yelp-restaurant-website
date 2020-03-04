@@ -1,16 +1,13 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-
-    <router-view/>
 
     <br>
-    <div class="footer navbar-fixed-bottom">
+    <router-view/>
+    <br><br><br><br>
+
+    <footer class="footer" id="footer">
       <p><a href="https://github.com/ehanover">By Ethan Hanover</a> | Powered by <a href="https://www.yelp.com/fusion">Yelp Fusion</a></p>
-    </div>
+    </footer>
 
   </div>
 </template>
@@ -23,11 +20,20 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  /* color: #2c3e50; */
 }
 
 #nav {
   padding: 30px;
+}
+
+#footer {
+  position: fixed;
+  /* top: 50%; */
+  left: 50%;
+  bottom: 0;
+  margin-bottom: -10px;
+  margin-left: -150px;
 }
 
 /* #nav a {

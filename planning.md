@@ -38,7 +38,7 @@
 5. "Give me a random recommendation" (I'm feeling lucky)
 6. Find places that are "hot_and_new" or or have "deals"/"cashback" (on business search api page)
 7. Use other APIs
-	- Twitter!
+	- Twitter?
 
 
 #### Code
@@ -60,4 +60,3 @@
 
 #### Other
 - eslint: ```node ./node_modules/eslint/bin/eslint.js --fix src/views/Home.vue```
-- Hours: 2/22 (1), 2/23 (2), 2/24 (2), 2/25 (1)

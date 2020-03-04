@@ -1,6 +1,6 @@
-## Capital One - Software Engineering Summit Submission
+## Capital One - Software Engineering Summit Submission 2020
 
-### [Visit the website here](http://google.com)!
+### [Visit the website here]()!
 ___
 
 ### About the project
@@ -13,4 +13,4 @@ Should I add this section?
 Should I add this section?
 
 ___
-##### Note: To run this code, edit the ```src/credentials.js``` file and add your Yelp and Google Maps Client ID and API Key.
+##### Note: To run this code, edit the ```src/credentials.js``` file and add the required API credentials.
