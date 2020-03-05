@@ -1,7 +1,10 @@
 {
   "name": "capitalone-ses",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "engines": {
+    "node": "12.6.0"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
