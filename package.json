@@ -1,6 +1,7 @@
 {
   "name": "capitalone-ses",
   "version": "0.1.0",
+  "description": "A restaurant search Vue website for the Capital One Software Engineering Summit",
   "private": false,
   "engines": {
     "node": "12.6.0"
@@ -16,6 +17,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "express": "^4.17.1",
+    "google-maps": "^4.2.3",
     "path": "^0.12.7",
     "serve-static": "^1.14.1",
     "vue": "^2.6.11",
