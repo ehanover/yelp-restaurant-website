@@ -49,7 +49,7 @@ export default {
       } else if (param === 'review_count') {
         return m.review_count
       } else if (param === 'distance') {
-        return m.distance * 0.00062137 // convert meters to miles
+        return (m.distance * 0.00062137).toFixed(2) // convert meters to miles
       } else {
         return 'Incorrect sort argument' // this should never happen
       }
@@ -61,9 +61,9 @@ export default {
       return ((m.id === this.selectedId) ? 'font-weight: bold; text-decoration: underline;' : 'font-weight: normal;')
     },
     prettyHeader: function (oldHeader) {
-      return oldHeader
-      // var s = oldHeader.replace('best_match', 'Price').replace('_', ' ') // replaces underscores with spaces
-      // return s.replace(/\b\w/g, function (l) { return l.toUpperCase() }) // capitalizes first letter of words
+      // return oldHeader
+      var s = oldHeader.replace('best_match', 'Price').replace('_', ' ') // replaces underscores with spaces
+      return s.replace(/\b\w/g, function (l) { return l.toUpperCase() }) // capitalizes first letter of words
     }
 
   }

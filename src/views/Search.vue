@@ -1,12 +1,13 @@
 <template>
-  <div class="home">
+  <div class="search">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
+      <router-link to="/search">Search</router-link> |
+      <router-link to="/recommendation">Recommendation</router-link> |
       <router-link to="/about">About</router-link>
     </div>
 
     <h1>Yelp Restaurant Search</h1>
-    <p>To get started, search for restaurants below.</p>
+    <p>Search for restaurants with the options below.</p>
 
     <div class="container-fluid text-center">
       <div class="row content">
@@ -124,7 +125,7 @@ export default {
       corsAnywherePrefix: 'https://cors-anywhere.herokuapp.com/',
       // loader: null,
       google: null,
-      labelToId: {},
+      // labelToId: {},
 
       position: null,
       searchOptionTerm: '',
@@ -139,7 +140,9 @@ export default {
   },
 
   async mounted () {
-    console.log('maps key: ' + getMapsApiKey())
+    axios.defaults.headers.common.Authorization = 'Bearer ' + getYelpApiKey()
+
+    // console.log('maps key: ' + getMapsApiKey())
 
     const loader = new Loader(getMapsApiKey())
     this.google = await loader.load()
@@ -157,19 +160,19 @@ export default {
     } else {
       console.error('Error retrieving geolocation')
     }
-
-    axios.defaults.headers.common.Authorization = 'Bearer ' + getYelpApiKey()
   },
   methods: {
     mapRefocus: function (pos) {
       this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
     },
     mapMarkerClicked: function (marker) {
-      var clickedId = this.labelToId[marker.label]
+      // var clickedId = this.labelToId[marker.label]
+      var clickedId = marker.get('myid')
       console.log('marker clicked, id=' + clickedId)
 
       this.$refs.list.highlightRow(clickedId)
 
+      console.log('scrolling to row ' + clickedId)
       var element = document.getElementById('row ' + clickedId)
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     },
@@ -187,7 +190,7 @@ export default {
         this.google.maps.event.addListener(m, 'click', function () {
           v.mapMarkerClicked(this) // "this" is the marker that was clicked
         })
-        this.labelToId[m.label] = b.id
+        // this.labelToId[m.label] = b.id
       }
 
       this.$refs.list.init(businesses, this.convertSearchTerm(this.searchOptionSortByChoice))

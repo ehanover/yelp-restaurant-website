@@ -55,7 +55,8 @@ export default {
         position: markerData.location,
         map: this.map,
         // title: markerData.name,
-        label: markerData.name
+        label: markerData.name,
+        myid: markerData.id
       })
       this.markers.push(m)
       // console.log('returning m, l=' + m.label)

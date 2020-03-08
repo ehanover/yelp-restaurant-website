@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import Highcharts from 'highcharts'
+import HighchartsMore from 'highcharts/highcharts-more'
+import HighchartsVue from 'highcharts-vue'
+
+HighchartsMore(Highcharts)
+Vue.use(HighchartsVue)
 
 Vue.config.productionTip = false
 

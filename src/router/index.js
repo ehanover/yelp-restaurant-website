@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Home from '../views/Home.vue'
+import Search from '../views/Search.vue'
+import Recommendation from '../views/Recommendation.vue'
 import About from '../views/About.vue'
 import MerchantInfo from '../views/MerchantInfo.vue'
 
@@ -10,8 +11,17 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: Home,
-    name: 'Home'
+    redirect: '/search'
+  },
+  {
+    path: '/search',
+    component: Search,
+    name: 'Search'
+  },
+  {
+    path: '/recommendation',
+    component: Recommendation,
+    name: 'Recommendation'
   },
   {
     path: '/about',
@@ -31,7 +41,8 @@ const router = new VueRouter({
 })
 
 const PAGE_TITLE = {
-  Home: 'Yelp Restaurant Search',
+  Search: 'Restaurant Search',
+  Recommendation: 'Restaurant Recommendations',
   About: 'About',
   MerchantInfo: 'Merchant Info'
 }

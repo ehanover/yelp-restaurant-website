@@ -22,7 +22,7 @@
       <div class="row">
         <p class="col-sm-6">Categories: {{ merchant.categories.map(c => c.title).join(', ') }}</p>
         <div class="col-sm-6">
-          <a>Yelp Rating:  </a>
+          <a>Yelp Rating:   </a>
           <img v-bind:src="getImageFromRating(merchant.rating)" style="max-height: 80%;">
         </div>
       </div>
@@ -49,6 +49,7 @@
         <!-- there are reviews, so display them all -->
         <ul v-for="(review,index) in zomatoReviews.user_reviews" :key="index" class="row text-left">
           <li><h4>Review by <b>{{ review.review.user.name }}</b> on {{ review.review.review_time_friendly }}</h4></li>
+          <!-- TODO enforce newline for short reviews -->
           <a>{{ review.review.review_text }}</a>
         </ul>
       </div>
@@ -115,19 +116,19 @@ export default {
           },
           params: {
             q: this.merchant.name,
-            lat: this.merchant.coordinates.latitude,
-            lon: this.merchant.coordinates.longitude,
-            radius: 1,
+            lat: this.merchant.coordinates.latitude, // 38.9697
+            lon: this.merchant.coordinates.longitude, // -77.3838
+            radius: 1000, // in meters
             count: 1,
             sort: 'real_distance',
-            order: 'desc'
+            order: 'asc'
           }
         })
         .then(response => {
           // console.log('got zomato search response')
           try {
             this.merchantZomato = response.data.restaurants[0].restaurant // defaults to selecting the first result
-            this.zomatoGetReviews()
+            this.zomatoGetReviewsFirst()
             // console.log(this.merchantZomato)
           } catch (error) { // couldn't find a matching restaurante on zomato
             console.log('couldnt find a place, setting to null')
@@ -140,7 +141,7 @@ export default {
           console.error(error)
         })
     },
-    zomatoGetReviews: function () {
+    zomatoGetReviewsFirst: function () {
       var req2 = this.corsAnywherePrefix + 'https://developers.zomato.com/api/v2.1/reviews'
       axios
         .get(req2, {
