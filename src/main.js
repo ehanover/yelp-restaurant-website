@@ -5,13 +5,14 @@ import Highcharts from 'highcharts'
 import HighchartsMore from 'highcharts/highcharts-more'
 import HighchartsVue from 'highcharts-vue'
 
-HighchartsMore(Highcharts)
+HighchartsMore(Highcharts) // highchartsmore is needed for the packedbubble chart
 Vue.use(HighchartsVue)
 
 Vue.config.productionTip = false
 
+// html elements separate vue component files
+Vue.component('my-router-header', require('./components/MyRouterHeader'))
 Vue.component('my-map', require('./components/MyMap'))
-// Vue.component('merch-info', require('./components/MerchantInfo'))
 Vue.component('merch-list', require('./components/MerchantList'))
 
 new Vue({

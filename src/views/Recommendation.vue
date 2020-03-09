@@ -1,10 +1,7 @@
 <template>
+  <!-- The Recommendation page displays a Highcharts packedbubble chart to show up to 50 local restaurants in a visual way, hopefully to expose the user to some new restuarants. -->
   <div class="recommendation">
-    <div id="nav">
-      <router-link to="/search">Search</router-link> |
-      <router-link to="/recommendation">Recommendation</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <my-router-header></my-router-header>
 
     <h1>Restaurant Recommendations</h1>
     <p>Find new local restaurants in a visual way.</p>
@@ -20,27 +17,23 @@
             <div class="container-fluid form-group">
 
               <div class="row">
-                <a class="col-sm-2">Bubble parameter: </a>
-
+                <p class="col-sm-2">Bubble parameter: </p>
                 <div class="col-sm-3">
                   <select class="form-control" v-model="searchOptionBubbleChoice">
                       <option v-for="(option,index) in searchOptionBubbleChoices" :key="index">{{ option }}</option>
                   </select>
                 </div>
-
-                <div class="col-sm-3"></div>
-
-                <button type="submit" class="btn btn-primary col-sm-4" v-on:click="updateBubbles()">View Recommendation Map</button>
-
+                <div class="col-sm-4"></div>
+                <button type="submit" class="btn btn-primary col-sm-3" v-on:click="updateBubbles()">View Recommendations</button>
               </div>
 
             </div>
           </form>
           <br>
 
-          <highcharts :options="chartOptions"></highcharts>
+          <highcharts :options="chartOptions"></highcharts> <!-- Gets filled with the highcharts packedbubble chart -->
           <br>
-          <p>Restaurants are grouped by food category. The size of the bubble indicates the search parameter selected above.</p>
+          <p>Restaurants are grouped by food category. The size of the bubble indicates the search parameter selected above. Click on a bubble to see more details.</p>
 
         </div>
         <div class="col-sm-2 sidenav"></div>
@@ -48,17 +41,18 @@
       </div>
     </div>
   </div>
-  <!-- TODO copy github readme -->
 </template>
 
 <script>
 
+import MyRouterHeader from '../components/MyRouterHeader'
 import { Chart } from 'highcharts-vue'
 import axios from 'axios'
 import { getYelpApiKey } from '../credentials'
 
 export default {
   components: {
+    'my-router-header': MyRouterHeader,
     highcharts: Chart
   },
   data () {
@@ -78,24 +72,15 @@ export default {
         title: {
           text: 'Local Restaurants by Category'
         },
-        series: [{
+        series: [{ // the series attribute gets modified by the API calls
           name: '',
           data: [0, 0, 0] // starter data
         }],
         plotOptions: {
+          // https://www.highcharts.com/docs/chart-and-series-types/packed-bubble
           packedbubble: {
             useSimulation: false,
-            // minSize: '30%',
-            // maxSize: '120%',
-            // zMin: 0,
-            // zMax: 1000,
             layoutAlgorithm: {
-              // useSimulation: false,
-              // splitSeries: true,
-              // seriesInteraction: false,
-              // dragBetweenSeries: false,
-              // parentNodeLimit: false
-              // gravitationalConstant: 0.05,
               splitSeries: true,
               seriesInteraction: false,
               dragBetweenSeries: false,
@@ -113,15 +98,15 @@ export default {
   async mounted () {
     axios.defaults.headers.common.Authorization = 'Bearer ' + getYelpApiKey()
 
-    // var v = this
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition(function (pos) {
-    //     console.log('updated position')
-    //     v.position = pos.coords
-    //   })
-    // } else {
-    //   console.error('Error retrieving geolocation')
-    // }
+    var v = this
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        console.log('updated position')
+        v.position = pos.coords
+      })
+    } else {
+      console.error('Error retrieving geolocation')
+    }
   },
   methods: {
     updateBubbles: function () {
@@ -130,72 +115,84 @@ export default {
         .get(req, {
           params: {
             term: 'food',
-            latitude: 0, // this.position.latitude,
-            longitude: 0, // this.position.longitude,
-            radius: 40000, // 40000 meters is the max distance
+            latitude: this.position.latitude,
+            longitude: this.position.longitude,
+            radius: 40000, // 40000 meters is the max distance specified by the API
             open_now: false,
             sort_by: 'best_match',
             limit: 50
           }
         })
         .then(response => {
-          console.log('Got response from business indexing, length=' + response.data.businesses.length)
+          // console.log('Got response from business indexing, length=' + response.data.businesses.length)
+
+          // the following code combines the businesses returned by the API call into a dictionary of business lists, organized by categori
           this.chartOptions.series = []
           this.data = {}
-          // this.data = response.data.businesses
           var keys = []
           var tempData = []
           for (var i = 0; i < response.data.businesses.length; i++) {
-            // console.log(this.data[i].categories[0].title)
             var business = response.data.businesses[i]
+
             var ikey = business.categories[0].title
             var ivalue = business[this.searchOptionBubbleChoice]
             var iname = business.name
-            tempData.push({ key: ikey, value: ivalue, name: iname })
-            keys.push(ikey) // duplicates are not added to the set of categories
-            // console.log('got data with cat ' + ikey)
-          }
-          // console.log('key 0: ' + keys.values()[0])
-          var keysUnique = keys.filter((v, i, a) => a.indexOf(v) === i)
-          // console.log('unique: ' + keysUnique)
-          for (var c = 0; c < keysUnique.length; c++) { // categories
-            // console.log('initializing category ' + keysUnique[c])
-            this.data[keysUnique[c]] = []
-          }
-          for (var p = 0; p < tempData.length; p++) { // data points
-            var b = tempData[p]
-            // console.log('trying to push a value to list ' + b.key)
-            this.data[b.key].push({ value: b.value, name: b.name })
-          }
-          for (var k = 0; k < Object.keys(this.data).length; k++) { // categories
-            var cat = Object.keys(this.data)[k]
-            // console.log('setting cat data with __ elements, ' + this.data[cat].length)
-            // console.log('updating chartOptions with cat=' + cat)
-            this.chartOptions.series.push({
-              // type: 'packedbubble',
-              name: cat,
-              data: this.data[cat].map(i => ({ name: i.name, value: this.getBubbleValue(i) }))
-              // data: this.data[cat].map(i => this.getBubbleValue(i))
-            })
+            var iid = business.id
+
+            tempData.push({ key: ikey, value: ivalue, name: iname, id: iid })
+            keys.push(ikey)
           }
 
+          var keysUnique = keys.filter((v, i, a) => a.indexOf(v) === i) // duplicates are removed from the array of categories
+          for (var c = 0; c < keysUnique.length; c++) { // loop over categories to initialize the category lists
+            this.data[keysUnique[c]] = []
+          }
+          for (var p = 0; p < tempData.length; p++) { // loop over data points to add them to correct category lists
+            var b = tempData[p]
+            this.data[b.key].push({ value: b.value, name: b.name, id: b.id })
+          }
+          for (var k = 0; k < Object.keys(this.data).length; k++) { // loop over categories to finally update the chartData
+            var cat = Object.keys(this.data)[k]
+
+            var v = this
+            this.chartOptions.series.push({ //
+              name: cat,
+              data: this.data[cat].map(i => ({
+                name: i.name,
+                value: this.getBubbleValue(i),
+                events: {
+                  click: function (event) {
+                    // console.log('clicked a bubble: ' + i.name)
+                    v.$router.push({ name: 'MerchantInfo', params: { id: i.id } })
+                  }
+                }
+              }))
+            })
+          }
           console.log('done with business indexing')
-          // this.chartOptions.series = [1, 1, 1, 1, 1]
         })
         .catch(error => {
           console.error(error)
         })
     },
-    getBubbleValue: function (bubble) { // rating, price, review_count
+    getBubbleValue: function (bubble) {
+      // options from form are: rating, price, review_count
       if (this.searchOptionBubbleChoice === 'price') {
-        return ((bubble.value === undefined) ? 0 : bubble.value.length ^ 10) // converts dollar signs to number reflecting price
+        return ((bubble.value === undefined) ? 0 : this.factorial(bubble.value.length + 2)) // converts dollar signs to value reflecting price
       } else if (this.searchOptionBubbleChoice === 'rating') {
-        return parseFloat(bubble.value) ^ 13
+        return this.factorial(parseFloat(bubble.value) ^ 2)
       } else if (this.searchOptionBubbleChoice === 'review_count') {
         return parseFloat(bubble.value)
       } else {
         return 1
       }
+    },
+    factorial: function (num) {
+      var rval = 1
+      for (var i = 2; i <= num; i++) {
+        rval = rval * i
+      }
+      return rval
     }
   }
 }

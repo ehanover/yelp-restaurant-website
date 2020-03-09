@@ -1,4 +1,5 @@
 <template>
+  <!-- The MerchantInfo page displays information from Yelp and Zomato for a business whose ID is passed in the route navigation parameters. It shows contact information, pictures, and reviews. -->
   <div class="info row">
     <div class="col-sm-2 sidenav"></div>
 
@@ -22,7 +23,7 @@
       <div class="row">
         <p class="col-sm-6">Categories: {{ merchant.categories.map(c => c.title).join(', ') }}</p>
         <div class="col-sm-6">
-          <a>Yelp Rating:   </a>
+          <p>Yelp Rating:   </p>
           <img v-bind:src="getImageFromRating(merchant.rating)" style="max-height: 80%;">
         </div>
       </div>
@@ -36,21 +37,16 @@
 
       <h3>Reviews from <a href='https://zomato.com'>Zomato.com</a> at this location{{ (merchantZomato == null || merchantZomato === null) ? '' : ': ' + merchantZomato.name }}</h3>
       <hr>
-      <!-- reviews are still being loaded -->
-      <!-- <div v-if="zomatoReviews == null">
-
-        <p>...</p>
-      </div> -->
       <div v-if="zomatoReviews == null || zomatoReviews.reviews_count == 0">
         <!-- there are no reviews on zomato -->
         <p><i>There are no reviews at this location.</i></p>
       </div>
       <div v-else>
-        <!-- there are reviews, so display them all -->
+        <!-- there are reviews, so display them all using a for loop -->
         <ul v-for="(review,index) in zomatoReviews.user_reviews" :key="index" class="row text-left">
           <li><h4>Review by <b>{{ review.review.user.name }}</b> on {{ review.review.review_time_friendly }}</h4></li>
-          <!-- TODO enforce newline for short reviews -->
-          <a>{{ review.review.review_text }}</a>
+            <br>
+            <p>{{ review.review.review_text }}</p>
         </ul>
       </div>
 
@@ -68,8 +64,6 @@
 <style scoped>
 #merchantPhoto {
   max-height: 60%;
-  /* max-width: 90%; */
-  /* margin: 0 auto; */
 }
 </style>
 
@@ -79,16 +73,14 @@ import axios from 'axios'
 import { getZomatoUserKey } from '../credentials'
 
 export default {
-  props: ['id'],
+  props: ['id'], // parameters passed by the vue router when navigating to this page. Used in the API requests.
   data () {
     return {
       corsAnywherePrefix: 'https://cors-anywhere.herokuapp.com/',
 
-      publicPath: process.env.BASE_URL,
       ratingToImage: { 0: '0', 0.5: '', 1: '1', 1.5: '1_half', 2: '2', 2.5: '2_half', 3: '3', 3.5: '3_half', 4: '4', 4.5: '4_half', 5: '5' },
 
       merchant: null,
-
       merchantZomato: null,
       zomatoReviews: null
     }
@@ -100,7 +92,7 @@ export default {
       .then(response => {
         // console.log(response)
         this.merchant = response.data
-        this.zomatoSearchFirst() // updates merchantZomato
+        this.zomatoSearchFirst() // updates merchantZomato with the reviews from the first merchant in the zomato response
       })
       .catch(error => {
         console.error(error)
@@ -130,9 +122,10 @@ export default {
             this.merchantZomato = response.data.restaurants[0].restaurant // defaults to selecting the first result
             this.zomatoGetReviewsFirst()
             // console.log(this.merchantZomato)
-          } catch (error) { // couldn't find a matching restaurante on zomato
-            console.log('couldnt find a place, setting to null')
-            this.merchantZomato = null // null indicates no value, while '' indicates uncertain state
+          } catch (error) {
+            // couldn't find a matching restaurante on zomato
+            // console.log('couldnt find a place, setting to null')
+            this.merchantZomato = null
             this.zomatoReviews = null
             this.$forceUpdate()
           }
@@ -161,7 +154,7 @@ export default {
           console.error(error)
         })
     },
-    getImageFromRating (rating) {
+    getImageFromRating (rating) { // converts a rating 0-5 with 0.5 increments to the local filepath for the Yelp given images
       return '/images/regular_' + this.ratingToImage[rating] + '@2x.png'
     }
   }

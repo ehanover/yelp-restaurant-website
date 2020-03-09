@@ -1,21 +1,14 @@
 <template>
+  <!-- The Search page is the foundational page of this website because it has restuarant searching with many criteria. It shows the results on the map (MyMap component) and in a list (MerchantList component). -->
   <div class="search">
-    <div id="nav">
-      <router-link to="/search">Search</router-link> |
-      <router-link to="/recommendation">Recommendation</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <my-router-header></my-router-header>
 
-    <h1>Yelp Restaurant Search</h1>
+    <h1>Restaurant Search</h1>
     <p>Search for restaurants with the options below.</p>
 
     <div class="container-fluid text-center">
       <div class="row content">
-        <div class="col-sm-2 sidenav">
-          <!-- <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p> -->
-        </div>
+        <div class="col-sm-2 sidenav"></div>
         <div class="col-sm-8 text-left">
           <hr>
 
@@ -23,7 +16,7 @@
             <div class="container-fluid form-group">
 
               <div class="row">
-                <a class="col-sm-2">Search term: </a>
+                <p class="col-sm-2">Search term: </p>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" id="inputSearch" v-model="searchOptionTerm" placeholder='"Starbucks" or "barbeque"'>
                 </div>
@@ -31,8 +24,7 @@
 
               <br>
               <div class="row">
-                <a class="col-sm-2">Location: </a>
-                <!-- TODO implement -->
+                <p class="col-sm-2">Location: </p>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" id="inputLocation" v-model="searchOptionLocation" placeholder='"Charlottesville" or blank for current location'>
                 </div>
@@ -58,7 +50,6 @@
                   <div id="searchOptionSortId">
                     <select class="form-control" v-model="searchOptionSortByChoice">
                       <option v-for="(option,index) in searchOptionSortByChoices" :key="index">{{ option }}</option>
-                      <!-- .replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) -->
                     </select>
                   </div>
                 </div>
@@ -71,29 +62,15 @@
           </form>
 
           <my-map ref="map"></my-map>
-          <h5><i>Click a pin on the map above to see more details</i></h5>
+          <h5 class="text-center"><i>Click a pin on the map above to see more details</i></h5>
           <br>
-          <!-- <merchant-info ref="info"></merchant-info> -->
           <merchant-list ref="list"></merchant-list>
           <br>
-          <!-- <h4 v-if="$refs.map !== undefined">Currently selected: {{ $refs.map.selectedId }}</h4> -->
+
         </div>
-        <div class="col-sm-2 sidenav">
-          <!-- <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p>
-          <p><a href="#">Link</a></p>
-          <div class="well">
-            <p>ADS</p>
-          </div>
-          <div class="well">
-            <p>ADS</p>
-          </div> -->
-        </div>
+        <div class="col-sm-2 sidenav"></div>
       </div>
     </div>
-
-    <!-- centered -->
-    <!-- <h4>Bottom Text</h4> -->
 
   </div>
 </template>
@@ -109,6 +86,7 @@
 
 <script>
 
+import MyRouterHeader from '../components/MyRouterHeader'
 import MyMap from '../components/MyMap.vue'
 import MerchantList from '../components/MerchantList.vue'
 import { getYelpApiKey, getMapsApiKey } from '../credentials'
@@ -117,22 +95,20 @@ import axios from 'axios'
 
 export default {
   components: {
+    'my-router-header': MyRouterHeader,
     'my-map': MyMap,
     'merchant-list': MerchantList
   },
   data () {
     return {
       corsAnywherePrefix: 'https://cors-anywhere.herokuapp.com/',
-      // loader: null,
       google: null,
-      // labelToId: {},
 
       position: null,
       searchOptionTerm: '',
       searchOptionLocation: '',
       searchOptionRadius: 10,
       searchOptionOpenNow: false,
-      // searchOptionSortByChoices: ['best_match', 'rating', 'review_count', 'distance'],
       searchOptionSortByActual: ['rating', 'best_match', 'review_count', 'distance'], // terms that are used in the API call
       searchOptionSortByChoices: ['Rating', 'Best Match', 'Review Count', 'Distance'], // terms that are displayed to the user
       searchOptionSortByChoice: 'Rating'
@@ -142,15 +118,12 @@ export default {
   async mounted () {
     axios.defaults.headers.common.Authorization = 'Bearer ' + getYelpApiKey()
 
-    // console.log('maps key: ' + getMapsApiKey())
-
     const loader = new Loader(getMapsApiKey())
     this.google = await loader.load()
     this.$refs.map.init(this.google)
 
     var v = this
     if (navigator.geolocation) {
-      // navigator.geolocation.getCurrentPosition(this.mapRefocus)
       navigator.geolocation.getCurrentPosition(function (pos) {
         console.log('updated position')
         // console.log('updated position, lat=' + v.position.latitude)
@@ -166,7 +139,6 @@ export default {
       this.$refs.map.refocus(pos.coords.latitude, pos.coords.longitude, 12)
     },
     mapMarkerClicked: function (marker) {
-      // var clickedId = this.labelToId[marker.label]
       var clickedId = marker.get('myid')
       console.log('marker clicked, id=' + clickedId)
 
@@ -186,17 +158,16 @@ export default {
           id: b.id
         }
         var m = this.$refs.map.addMarker(data)
-        var v = this // stores reference to vue variables and functions
+        var v = this // stores reference to vue instance
         this.google.maps.event.addListener(m, 'click', function () {
           v.mapMarkerClicked(this) // "this" is the marker that was clicked
         })
-        // this.labelToId[m.label] = b.id
       }
 
       this.$refs.list.init(businesses, this.convertSearchTerm(this.searchOptionSortByChoice))
     },
     getCloseMerchants: function () {
-      // console.log('requesting with pos rad=' + this.searchOptionRadius)
+      // console.log('requesting with pos term=' + this.searchOptionTerm)
       var req = this.corsAnywherePrefix + 'https://api.yelp.com/v3/businesses/search'
 
       var params = {
@@ -205,7 +176,7 @@ export default {
         open_now: this.searchOptionOpenNow,
         sort_by: this.convertSearchTerm(this.searchOptionSortByChoice)
       }
-      if (this.searchOptionLocation === '') {
+      if (this.searchOptionLocation === '') { // if search term is blank, then use the geolocation coordinates
         params.latitude = this.position.latitude
         params.longitude = this.position.longitude
       } else {
@@ -217,10 +188,10 @@ export default {
           params: params
         })
         .then(response => {
-          console.log('Got response from business search')
+          // console.log('Got response from business search')
           this.$refs.map.clearAllMarkers()
           this.addMarkersFromData(response)
-          this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13) // TODO make this depend on search radius?
+          this.$refs.map.refocus(response.data.region.center.latitude, response.data.region.center.longitude, 13)
         })
         .catch(error => {
           console.error(error)

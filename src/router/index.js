@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import Search from '../views/Search.vue'
 import Recommendation from '../views/Recommendation.vue'
+import Specials from '../views/Specials.vue'
 import About from '../views/About.vue'
 import MerchantInfo from '../views/MerchantInfo.vue'
 
@@ -24,6 +25,11 @@ const routes = [
     name: 'Recommendation'
   },
   {
+    path: '/specials',
+    component: Specials,
+    name: 'Specials'
+  },
+  {
     path: '/about',
     component: About,
     name: 'About'
@@ -40,11 +46,13 @@ const router = new VueRouter({
   routes
 })
 
+// changes the window title based on the name of the active route
 const PAGE_TITLE = {
   Search: 'Restaurant Search',
   Recommendation: 'Restaurant Recommendations',
-  About: 'About',
-  MerchantInfo: 'Merchant Info'
+  MerchantInfo: 'Merchant Info',
+  Specials: 'Special Restaurant Deals',
+  About: 'About'
 }
 router.afterEach((toRoute, fromRoute) => {
   window.document.title = PAGE_TITLE[toRoute.name]

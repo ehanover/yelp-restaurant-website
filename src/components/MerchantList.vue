@@ -1,7 +1,6 @@
 <template>
+  <!-- Merchant list consists of a  table that displays restuarant names and a selected properties that are returned from the Search page API call. -->
   <div class="list">
-
-    <!-- <h3>This is merchant list:</h3> -->
 
     <div v-if="merchants != null">
       <table class="table">
@@ -13,7 +12,7 @@
         </thead>
         <tbody>
           <tr v-for="(m,index) in merchants" :key="index" :id="'row ' + m.id">
-            <td> <a v-bind:style="getRowStyle(m)">{{ index+1 }}. <router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></a> </td>
+            <td><p>{{ index+1 }}.</p> <p v-bind:style="getRowStyle(m)"><router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></p> </td>
             <td>{{ getTableProperty(m, sortParam) }}</td>
           </tr>
         </tbody>
@@ -43,15 +42,15 @@ export default {
     },
     getTableProperty: function (m, param) {
       if (param === 'best_match') {
-        return m.price // this isn't an obvious display choice
+        return m.price // there is no merchant response property for 'best_match' so display price instead
       } else if (param === 'rating') {
         return m.rating
       } else if (param === 'review_count') {
         return m.review_count
       } else if (param === 'distance') {
-        return (m.distance * 0.00062137).toFixed(2) // convert meters to miles
+        return (m.distance * 0.00062137).toFixed(2) // convert meters to miles with 2 decimal places
       } else {
-        return 'Incorrect sort argument' // this should never happen
+        return 'Sort argument error' // this should never happen
       }
     },
     highlightRow: function (mid) {
@@ -61,7 +60,6 @@ export default {
       return ((m.id === this.selectedId) ? 'font-weight: bold; text-decoration: underline;' : 'font-weight: normal;')
     },
     prettyHeader: function (oldHeader) {
-      // return oldHeader
       var s = oldHeader.replace('best_match', 'Price').replace('_', ' ') // replaces underscores with spaces
       return s.replace(/\b\w/g, function (l) { return l.toUpperCase() }) // capitalizes first letter of words
     }

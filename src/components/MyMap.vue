@@ -1,15 +1,12 @@
 <template>
-  <div class="map"> <!-- gets filled by javascript below -->
-    <div id="map-area">
+  <!-- MyMap is a container component for the Google Maps map element. It holds some marker information and controls the zoom of the map. -->
+  <div class="map">
+    <div id="map-area">  <!-- gets filled by javascript below -->
     </div>
   </div>
 </template>
 
 <script>
-
-// import { MapsApiKey } from '../credentials'
-// import GoogleMapsLoader from 'google-maps'
-// import { Loader } from 'google-maps' // , LoaderOptions
 
 export default {
   name: 'MyMap',
@@ -22,48 +19,29 @@ export default {
       selectedId: null
     }
   },
-  async mounted () { // TODO the map gets loaded every time the page changes
-    // https://www.npmjs.com/package/google-maps
-    // const loader = new Loader(MapsApiKey)
-    // this.google = await loader.load() // TODO I could move the google object to the parent class. That would allow proper click handle and maybe smarter loading?
-    // this.map = new this.google.maps.Map(document.getElementById('map-area'), { // eslint-disable-line no-unused-vars
-    //   center: { lat: 38.035, lng: -78.503 },
-    //   zoom: 12
-    // })
-    // loader.load().then(function (google) {
-    //   const map = new google.maps.Map(document.getElementById('map-area'), { // eslint-disable-line no-unused-vars
-    //     center: { lat: -34.397, lng: 150.644 },
-    //     zoom: 8
-    //   })
-    // })
+  async mounted () {
+
   },
   methods: {
     init: function (g) {
       this.google = g
-
       this.map = new this.google.maps.Map(document.getElementById('map-area'), {
-        center: { lat: 38.035, lng: -78.503 },
+        center: { lat: 38.035, lng: -78.503 }, // defaults to rotunda
         zoom: 12
       })
     },
-    // setClicked: function (id) { // problem
-    //   this.selectedId = id
-    //   console.log('selected the marker for ' + this.selectedId)
-    // },
     addMarker: function (markerData) {
       var m = new this.google.maps.Marker({
         position: markerData.location,
         map: this.map,
-        // title: markerData.name,
         label: markerData.name,
         myid: markerData.id
       })
       this.markers.push(m)
       // console.log('returning m, l=' + m.label)
-      return m // return marker to parent class to allow onclick binding
+      return m // return marker to parent class to allow onclick binding from by the parent
     },
     refocus: function (x, y, zoom) {
-      // this.map.setCenter(this.markers[0].location)
       this.map.setCenter({ lat: x, lng: y })
       this.map.setZoom(zoom)
     },
@@ -80,13 +58,7 @@ export default {
 </script>
 
 <style scoped>
-/* #map {
-  height: 100%;
-  background-color: pink;
-} */
 #map-area {
   height: 700px;
-  /* background-color: purple; */
 }
-
 </style>
