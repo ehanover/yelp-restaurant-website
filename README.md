@@ -1,10 +1,10 @@
 # Restaurant Search Website
-##### My submission for the 2020 Capital One Software Engineering Summit
+#### My submission for the 2020 Capital One Software Engineering Summit
 ## [Visit the website here!](https://ehanover-c1-ses.herokuapp.com/)
 
-<img src="screenshots/search1.png" width="20%" title="Search screen"> <img src="screenshots/details1.png" width="20%" title="Restaurant details screen"> <img src="screenshots/recommendations1.png" width="20%" title="Recommendations screen">
+<img src="screenshots/search1.png" width="33%" title="Search screen"> <img src="screenshots/details1.png" width="33%" title="Restaurant details screen"> <img src="screenshots/recommendations1.png" width="32%" title="Recommendations screen">
 
-*Update - I was selected to attend the Summit!*
+#### *Update - I was selected to attend the Summit!*
 
 ### About the project
 This website is made with [Vue.js](https://vuejs.org/) as the project framework, [Bootstrap](https://getbootstrap.com/) for the front-end design, Highcharts and Google Maps for displaying data, and the Yelp and Zomato APIs for gathering data.
