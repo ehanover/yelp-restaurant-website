@@ -1,7 +1,7 @@
 {
   "name": "capitalone-ses",
-  "version": "0.1.0",
-  "description": "A restaurant search Vue website for the Capital One Software Engineering Summit",
+  "version": "1.0.1",
+  "description": "A restaurant search Vue website for the 2020 Capital One Software Engineering Summit",
   "private": false,
   "engines": {
     "node": "12.6.0"

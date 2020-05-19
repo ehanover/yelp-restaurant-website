@@ -12,7 +12,7 @@
         </thead>
         <tbody>
           <tr v-for="(m,index) in merchants" :key="index" :id="'row ' + m.id">
-            <td><p>{{ index+1 }}.</p> <p v-bind:style="getRowStyle(m)"><router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></p> </td>
+            <td><a>{{ index+1 }}.</a> <a v-bind:style="getRowStyle(m)"><router-link :to="{ name: 'MerchantInfo', params: { id: m.id }}">{{ m.name }}</router-link></a> </td>
             <td>{{ getTableProperty(m, sortParam) }}</td>
           </tr>
         </tbody>
